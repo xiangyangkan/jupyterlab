@@ -1,0 +1,8 @@
+sudo  
+vim  
+git  
+build-essential  
+dos2unix  
+htop  
+pigz  
+

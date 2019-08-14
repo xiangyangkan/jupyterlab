@@ -24,17 +24,6 @@
    
    - 更换镜像为`rivia/jupyterlab:ml`
 
-## 运行jupyter lab的数据库容器
-   `docker-compose -f docker-compose.yml up -d`
-   - `rivia/jupyterlab:db`  
-     提供redis数据库和influxdb, mysql客户端
-   - `influxdb:alpine`  
-     提供influxdb数据库
-   - `mysql:alpine`  
-     提供mysql数据库
-   - host宿主机直接根据expose端口访问
-   - jupyter容器中访问需要指定数据库容器的hostname和端口
-
 ## 注意
    - 在AWS EC2上无法共享/root目录
    - debain_requirements.txt中包含要安装的debian环境，每行要空格，最后留空行

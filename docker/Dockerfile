@@ -36,7 +36,6 @@ RUN apt-get update --fix-missing && \
     conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/conda-forge/ && \
     conda config --set show_channel_urls yes && \
     conda update -n base -c defaults conda && \
-    conda update --all -y && \
     conda install --quiet -y --file /python_requirements.txt && \
     conda install --quiet -y requests && \
     npm config set registry http://registry.npm.taobao.org/ && \

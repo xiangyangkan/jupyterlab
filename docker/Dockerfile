@@ -38,6 +38,7 @@ RUN apt-get update --fix-missing && \
     conda update -n base -c defaults conda && \
     conda update --all -y && \
     conda install --quiet -y --file /python_requirements.txt && \
+    conda install --quiet -y requests && \
     npm config set registry http://registry.npm.taobao.org/ && \
     conda remove --quiet --yes --force qt pyqt && \
     conda clean --all -f -y \
@@ -48,6 +49,7 @@ RUN apt-get update --fix-missing && \
         jupyter-matplotlib \
         && \
     npm cache clean --force
+
 
 # jupyter code formatter
 RUN conda install --quiet -y black jupyterlab_code_formatter && \
@@ -94,6 +96,7 @@ RUN chmod +x /run_jupyter.sh && \
     python -m ipykernel.kernelspec
 EXPOSE 8888
 
+
 # install mysql-server, redis-server and influxdb
 ARG DB
 ENV DEBIAN_VERSION=stretch
@@ -129,6 +132,7 @@ RUN test -z ${DB} || (apt-get update --fix-missing && \
     user=root \n\
     command=influxd" \
     >>/opt/conda/etc/supervisord.conf)
+
 
 ARG ML
 RUN test -z ${ML} || (conda install --quiet -y \

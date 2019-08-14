@@ -4,7 +4,7 @@ jupyterhub
 jupyterlab
 ipywidgets
 ipympl
-conda-forge::blas=*=mkl
+conda-forge::blas=*=openblas
 numpy
 scipy
 pandas
@@ -24,4 +24,3 @@ hdf5
 h5py
 protobuf
 xlrd
-requests

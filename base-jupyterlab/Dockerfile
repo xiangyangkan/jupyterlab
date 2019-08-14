@@ -94,6 +94,47 @@ RUN chmod +x /run_jupyter.sh && \
     python -m ipykernel.kernelspec
 EXPOSE 8888
 
+# install mysql-server, redis-server and influxdb
+ARG DB
+ENV DEBIAN_VERSION=stretch
+RUN test -z ${DEV} || apt-get update --fix-missing && \
+    apt-get install -y --no-install-recommends --allow-unauthenticated \
+    gnupg2 apt-transport-https && \
+    curl -sL https://repos.influxdata.com/influxdb.key | sudo apt-key add - && \
+    echo "deb https://repos.influxdata.com/debian ${DEBIAN_VERSION} stable" >>/etc/apt/sources.list.d/influxdb.list && \
+    apt-get update --fix-missing && \
+    apt-get install -y --no-install-recommends --allow-unauthenticated \
+    mysql-server \
+    redis-server \
+    influxdb \
+    && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* && \
+    rm -f /etc/apt/sources.list.d/influxdb.list \
+    && \
+    conda install --quiet -y sqlalchemy redis-py requests && \
+    conda clean --all -f -y && \
+    pip install --no-cache-dir influxdb \
+    && \
+    printf "\n\
+    [program:mysql-server] \n\
+    user=root \n\
+    command=mysql-server --character-set-server=utf8mb4 --max-allowed-packet=256M" \
+    >>/opt/conda/etc/supervisord.conf
+    && \
+    printf "\n\
+    [program:redis-server] \n\
+    user=root \n\
+    command=redis-server" \
+    >>/opt/conda/etc/supervisord.conf
+    && \
+    printf "\n\
+    [program:influxd] \n\
+    user=root \n\
+    command=influxd" \
+    >>/opt/conda/etc/supervisord.conf
+
+
 ENTRYPOINT [ "/usr/bin/tini", "--" ]
 
 CMD ["/opt/conda/bin/supervisord", "-c", "/opt/conda/etc/supervisord.conf"]

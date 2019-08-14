@@ -97,9 +97,9 @@ EXPOSE 8888
 # install mysql-server, redis-server and influxdb
 ARG DB
 ENV DEBIAN_VERSION=stretch
-RUN test -z ${DEV} || (apt-get update --fix-missing && \
+RUN test -z ${DB} || (apt-get update --fix-missing && \
     apt-get install -y --no-install-recommends --allow-unauthenticated \
-    apt-transport-https gnupg2 && \
+    gnupg2 apt-transport-https && \
     curl -sL https://repos.influxdata.com/influxdb.key | sudo apt-key add - && \
     echo "deb https://repos.influxdata.com/debian ${DEBIAN_VERSION} stable" >>/etc/apt/sources.list.d/influxdb.list && \
     apt-get update --fix-missing && \
@@ -111,10 +111,6 @@ RUN test -z ${DEV} || (apt-get update --fix-missing && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     rm -f /etc/apt/sources.list.d/influxdb.list \
-    && \
-    conda install --quiet -y sqlalchemy redis-py requests && \
-    conda clean --all -f -y && \
-    pip install --no-cache-dir influxdb \
     && \
     printf "\n\
     [program:mysql-server] \n\
@@ -134,6 +130,14 @@ RUN test -z ${DEV} || (apt-get update --fix-missing && \
     command=influxd" \
     >>/opt/conda/etc/supervisord.conf)
 
+ARG ML
+RUN test -z ${ML} || (conda install --quiet -y \
+    scikit-learn \
+    scikit-image \
+    tensorflow \
+    keras \
+    && \
+    conda clean --all -f -y)
 
 ENTRYPOINT [ "/usr/bin/tini", "--" ]
 

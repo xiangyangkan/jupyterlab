@@ -131,12 +131,22 @@ RUN test -z ${DB} || (apt-get update --fix-missing && \
 
 
 ARG ML
-RUN test -z ${ML} || (conda install --quiet -y \
+RUN test ${ML} = cpu && (conda install --quiet -y \
+    scikit-learn \
+    scikit-image \
+    tensorflow \
+    keras \
+    pytorch \
+    torchvision \
+    && \
+    conda clean --all -f -y)
+
+RUN test ${ML} = gpu && (conda install --quiet -y \
     scikit-learn \
     scikit-image \
     cudatoolkit \
     cudnn \
-    tensorflow \
+    tensorflow-gpu \
     keras \
     pytorch \
     torchvision \

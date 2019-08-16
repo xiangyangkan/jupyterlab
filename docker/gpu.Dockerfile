@@ -59,13 +59,20 @@ RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-${MINICONDA}-Lin
     find /opt/conda/ -follow -type f -name '*.js.map' -delete && \
     /opt/conda/bin/conda clean -afy
 
+
 # Others dependencies
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 ENV PATH /opt/conda/bin:$PATH
-COPY python_requirements.txt /
-RUN conda config --add channels conda-forge && \
+COPY python_requirements.txt debian_requirements.txt /
+RUN apt-get update --fix-missing && \
+    cat /debian_requirements.txt | xargs apt-get install -y --no-install-recommends --allow-unauthenticated && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* \
+    && \
+    conda config --add channels conda-forge && \
     conda config --set show_channel_urls yes && \
     conda update -n base -c defaults conda && \
+    conda update --all -y && \
     conda install --quiet -y --file /python_requirements.txt && \
     conda remove --quiet --yes --force qt pyqt && \
     conda clean --all -f -y \
@@ -73,8 +80,19 @@ RUN conda config --add channels conda-forge && \
     jupyter labextension install \
         @jupyter-widgets/jupyterlab-manager \
         @jupyterlab/hub-extension \
-        jupyter-matplotlib && \
+        jupyter-matplotlib \
+        && \
     npm cache clean --force
+
+
+# jupyter code formatter
+RUN conda install --quiet -y black jupyterlab_code_formatter && \
+    jupyter labextension install @ryantam626/jupyterlab_code_formatter && \
+    jupyter serverextension enable --py jupyterlab_code_formatter && \
+    conda clean --all -f -y && \
+    npm cache clean --force
+COPY shortcuts.jupyterlab-settings /root/.jupyter/lab/user-settings/@jupyterlab/shortcuts-extension
+
 
 # deal with vim and matplotlib Mojibake
 COPY simhei.ttf /opt/conda/lib/python${PYTHON_VERSION}/site-packages/matplotlib/mpl-data/fonts/ttf
@@ -84,9 +102,11 @@ RUN echo "set encoding=utf-8 nobomb" >> /etc/vim/vimrc && \
     echo "set fileformats=unix,dos,mac" >> /etc/vim/vimrc && \
     rm -rf /root/.cache/matplotlib
 
+
 # supervisor config
 RUN mkdir /var/run/sshd /var/log/supervisor
 COPY supervisord.conf /opt/conda/etc/supervisord.conf
+
 
 # SSH config
 RUN apt-get update --fix-missing && apt-get install --no-install-recommends --allow-unauthenticated -y \
@@ -101,6 +121,7 @@ COPY set_root_pw.sh run_ssh.sh /
 RUN chmod +x /*.sh && sed -i -e 's/\r$//' /*.sh
 ENV AUTHORIZED_KEYS **None**
 EXPOSE 22
+
 
 # jupyter lab config
 COPY jupyter_notebook_config.py /root/.jupyter/

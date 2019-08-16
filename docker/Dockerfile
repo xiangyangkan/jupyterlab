@@ -54,7 +54,9 @@ RUN apt-get update --fix-missing && \
 # jupyter code formatter
 RUN conda install --quiet -y black jupyterlab_code_formatter && \
     jupyter labextension install @ryantam626/jupyterlab_code_formatter && \
-    jupyter serverextension enable --py jupyterlab_code_formatter
+    jupyter serverextension enable --py jupyterlab_code_formatter && \
+    conda clean --all -f -y && \
+    npm cache clean --force
 COPY shortcuts.jupyterlab-settings /root/.jupyter/lab/user-settings/@jupyterlab/shortcuts-extension
 
 

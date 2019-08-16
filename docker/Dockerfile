@@ -148,7 +148,7 @@ RUN test ${ML} = gpu && (conda install --quiet -y \
     cudnn \
     tensorflow-gpu \
     keras \
-    pytorch-gpu \
+    pytorch \
     torchvision \
     && \
     conda clean --all -f -y)

@@ -40,7 +40,6 @@ RUN apt-get update --fix-missing && \
     conda install --quiet -y --file /python_requirements.txt && \
     conda install --quiet -y requests && \
     npm config set registry http://registry.npm.taobao.org/ && \
-    conda remove --quiet --yes --force qt pyqt && \
     conda clean --all -f -y \
     && \
     jupyter labextension install \

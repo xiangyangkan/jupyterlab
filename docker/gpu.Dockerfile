@@ -74,7 +74,6 @@ RUN apt-get update --fix-missing && \
     conda update -n base -c defaults conda && \
     conda update --all -y && \
     conda install --quiet -y --file /python_requirements.txt && \
-    conda remove --quiet --yes --force qt pyqt && \
     conda clean --all -f -y \
     && \
     jupyter labextension install \

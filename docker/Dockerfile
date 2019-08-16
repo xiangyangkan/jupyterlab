@@ -30,10 +30,7 @@ RUN apt-get update --fix-missing && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* \
     && \
-    conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/ && \
-    conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main/ && \
     conda config --add channels conda-forge && \
-    conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/conda-forge/ && \
     conda config --set show_channel_urls yes && \
     conda update -n base -c defaults conda && \
     conda update --all -y && \
@@ -139,8 +136,12 @@ ARG ML
 RUN test -z ${ML} || (conda install --quiet -y \
     scikit-learn \
     scikit-image \
+    cudatoolkit \
+    cudnn \
     tensorflow \
     keras \
+    pytorch \
+    torchvision \
     && \
     conda clean --all -f -y)
 

@@ -131,27 +131,31 @@ RUN test -z ${DB} || (apt-get update --fix-missing && \
 
 
 ARG ML
-RUN test ${ML} = cpu && (conda install --quiet -y \
-    scikit-learn \
-    scikit-image \
-    tensorflow \
-    keras \
-    pytorch \
-    torchvision \
-    && \
-    conda clean --all -f -y)
+RUN if [[ ${ML} = cpu ]] ; then \
+    conda install --quiet -y \
+      scikit-learn \
+      scikit-image \
+      tensorflow \
+      keras \
+      pytorch \
+      torchvision \
+      && \
+    conda clean --all -f -y; \
+    fi
 
-RUN test ${ML} = gpu && (conda install --quiet -y \
-    scikit-learn \
-    scikit-image \
-    cudatoolkit \
-    cudnn \
-    tensorflow-gpu \
-    keras \
-    pytorch \
-    torchvision \
-    && \
-    conda clean --all -f -y)
+RUN if [[ ${ML} = gpu ]] ; then \
+    conda install --quiet -y \
+      scikit-learn \
+      scikit-image \
+      cudatoolkit \
+      cudnn \
+      tensorflow-gpu \
+      keras \
+      pytorch \
+      torchvision \
+      && \
+    conda clean --all -f -y; \
+    fi
 
 ENTRYPOINT [ "/usr/bin/tini", "--" ]
 

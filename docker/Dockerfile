@@ -131,7 +131,7 @@ RUN test -z ${DB} || (apt-get update --fix-missing && \
 
 
 ARG ML
-RUN if [[ ${ML} = cpu ]] ; then \
+RUN if [ '${ML}' = 'cpu' ] ; then \
     conda install --quiet -y \
       scikit-learn \
       scikit-image \
@@ -143,7 +143,7 @@ RUN if [[ ${ML} = cpu ]] ; then \
     conda clean --all -f -y; \
     fi
 
-RUN if [[ ${ML} = gpu ]] ; then \
+RUN if [ '${ML}' = 'gpu' ] ; then \
     conda install --quiet -y \
       scikit-learn \
       scikit-image \

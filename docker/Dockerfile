@@ -6,6 +6,9 @@ ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 ENV PATH /opt/conda/bin:$PATH
 ENV PYTHON_VERSION 3.7
 
+# Needed for string substitution
+SHELL ["/bin/bash", "-c"]
+
 # change debian and pip source
 RUN mv /etc/apt/sources.list /etc/apt/sources.list.bak && \
     echo "deb http://mirrors.aliyun.com/debian stretch main contrib non-free" >>/etc/apt/sources.list && \

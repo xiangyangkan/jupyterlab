@@ -50,9 +50,9 @@ RUN conda install --quiet -y black jupyterlab_code_formatter && \
     jupyter labextension install @ryantam626/jupyterlab_code_formatter && \
     jupyter serverextension enable --py jupyterlab_code_formatter && \
     conda clean --all -f -y && \
-    npm cache clean --force
+    npm cache clean --force && \
+    mkdir /root/.jupyter/lab/user-settings/@jupyterlab/shortcuts-extension
 COPY shortcuts.jupyterlab-settings /root/.jupyter/lab/user-settings/@jupyterlab/shortcuts-extension
-RUN chmod +x /root/.jupyter/lab/user-settings/@jupyterlab/shortcuts-extension
 
 
 # deal with vim and matplotlib Mojibake

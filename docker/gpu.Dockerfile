@@ -1,10 +1,13 @@
 ARG UBUNTU_VERSION=18.04
 ARG CUDA=10.0
+
+FROM nvidia/cuda:${CUDA}-base-ubuntu${UBUNTU_VERSION} as base
+
+ARG UBUNTU_VERSION=18.04
+ARG CUDA=10.0
 ARG CUDNN=7.4.1.5-1
 ARG MINICONDA=4.6.14
 ARG PYTHON_VERSION=3.7
-
-FROM nvidia/cuda:${CUDA}-base-ubuntu${UBUNTU_VERSION} as base
 
 # Needed for string substitution
 SHELL ["/bin/bash", "-c"]
@@ -18,6 +21,7 @@ RUN apt-get update --fix-missing && apt-get install -y --no-install-recommends \
         cuda-curand-${CUDA/./-} \
         cuda-cusolver-${CUDA/./-} \
         cuda-cusparse-${CUDA/./-} \
+        libnvinfer5=5.1.5-1+cuda${CUDA} \
         curl \
         libcudnn7=${CUDNN}+cuda${CUDA} \
         libfreetype6-dev \
@@ -131,6 +135,13 @@ RUN chmod +x /run_jupyter.sh && \
     python -m ipykernel.kernelspec
 EXPOSE 8888
 
-ENTRYPOINT [ "/usr/bin/tini", "--" ]
+
+# install machine learning packages
+RUN pip install --no-cache-dir tensorflow-gpu && \
+    conda install --quiet -y \
+      scikit-learn \
+      scikit-image \
+      && \
+    conda clean --all -f -y
 
 CMD ["/opt/conda/bin/supervisord", "-c", "/opt/conda/etc/supervisord.conf"]

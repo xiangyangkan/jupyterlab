@@ -152,6 +152,15 @@ RUN [[ ${ML} != gpu ]] || (conda install --quiet -y \
       && \
     conda clean --all -f -y)
 
+
+ARG DEV
+RUN test -z ${DEV} || (conda install --quiet -y \
+      sphinx \
+      twine \
+      boto3 \
+      && \
+    conda clean --all -f -y)
+
 ENTRYPOINT [ "/usr/bin/tini", "--" ]
 
 CMD ["/opt/conda/bin/supervisord", "-c", "/opt/conda/etc/supervisord.conf"]

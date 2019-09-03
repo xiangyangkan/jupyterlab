@@ -107,5 +107,4 @@ venv.bak/
 **/.idea/
 
 # git-crypt-key
-.git-crypt/
 **/git-crypt-key

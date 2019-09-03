@@ -153,11 +153,14 @@ RUN [[ ${ML} != gpu ]] || (conda install --quiet -y \
     conda clean --all -f -y)
 
 
-ARG DEV
+ARG MAVIS
 RUN test -z ${DEV} || (conda install --quiet -y \
+      scikit-learn \
+      boto3 \
       sphinx \
       twine \
-      boto3 \
+      sphinx_rtd_theme \
+      m2r \
       && \
     conda clean --all -f -y)
 

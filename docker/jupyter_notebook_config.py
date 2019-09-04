@@ -7,12 +7,12 @@ c.NotebookApp.open_browser = False
 c.MultiKernelManager.default_kernel_name = 'python3'
 
 # sets a password if PASSWORD is set in the environment
-if 'PASSWORD' in os.environ:
-    c.NotebookApp.password = passwd(os.environ['PASSWORD'])
-    del os.environ['PASSWORD']
+if 'NOTEBOOK_PASS' in os.environ:
+    c.NotebookApp.password = passwd(os.environ['NOTEBOOK_PASS'])
+    del os.environ['NOTEBOOK_PASS']
 else:
     c.NotebookApp.token = ''
 
-if 'WORK_DIR' in os.environ:
-    c.NotebookApp.notebook_dir = os.environ['WORK_DIR']
-    del os.environ['WORK_DIR']
+if 'NOTEBOOK_USER' in os.environ:
+    c.NotebookApp.notebook_dir = '/root/' + os.environ['NOTEBOOK_USER']
+    del os.environ['NOTEBOOK_USER']

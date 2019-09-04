@@ -1,16 +1,15 @@
 version: "3.7"
+
 services:
   jupyterlab:
     image: rivia/jupyterlab:${JUPYTERLAB_TAG}
     restart: always
     hostname: jupyterlab
     ports:
-      - {NOTEBOOK_PORT}:8888
-      - {SSH_PORT}:22
+      - ${NOTEBOOK_PORT}:8888
+      - ${SSH_PORT}:22
     env_file:
       - deployment.env
     volumes:
       /root/${NOTEBOOK_USER}:/root/${NOTEBOOK_USER}
     container_name: ${NOTEBOOK_USER}
-
-

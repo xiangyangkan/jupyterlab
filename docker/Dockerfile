@@ -9,6 +9,13 @@ ENV PYTHON_VERSION 3.7
 # Needed for string substitution
 SHELL ["/bin/bash", "-c"]
 
+
+# change timezone
+ARG TZ="Asia/Shanghai"
+RUN ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime && \
+    echo ${TZ} > /etc/timezone
+
+
 # change debian and pip source
 RUN mv /etc/apt/sources.list /etc/apt/sources.list.bak && \
     echo "deb http://mirrors.aliyun.com/debian stretch main contrib non-free" >>/etc/apt/sources.list && \
@@ -86,6 +93,14 @@ ENV AUTHORIZED_KEYS **None**
 EXPOSE 22
 
 
+# proxy config
+# if you want to start proxy, run `service v2ray start`
+RUN curl -L -o /tmp/go.sh https://install.direct/go.sh && \
+    chmod +x /tmp/go.sh && \
+    /tmp/go.sh && \
+COPY v2ray_config.json /etc/v2ray/config.json
+
+
 # jupyter lab config
 COPY jupyter_notebook_config.py /root/.jupyter/
 COPY run_jupyter.sh /
@@ -133,6 +148,7 @@ RUN test -z ${DB} || (apt-get update --fix-missing && \
     >>/opt/conda/etc/supervisord.conf)
 
 
+# Machine Learning
 ARG ML
 RUN [[ ${ML} != cpu ]] || (conda install --quiet -y \
       scikit-learn \
@@ -153,6 +169,7 @@ RUN [[ ${ML} != gpu ]] || (conda install --quiet -y \
     conda clean --all -f -y)
 
 
+# Mavis
 ARG MAVIS
 RUN test -z ${DEV} || (conda install --quiet -y \
       scikit-learn \

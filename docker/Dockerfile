@@ -98,7 +98,8 @@ EXPOSE 22
 RUN curl -L -o /tmp/go.sh https://install.direct/go.sh && \
     chmod +x /tmp/go.sh && \
     /tmp/go.sh && \
-COPY v2ray_config.json /etc/v2ray/config.json
+COPY v2ray_config.json /etc/v2ray/
+RUN mv /etc/v2ray/v2ray_config.json /etc/v2ray/config.json
 
 
 # jupyter lab config

@@ -11,5 +11,5 @@ services:
     env_file:
       - deployment.env
     volumes:
-      /root/${NOTEBOOK_USER}:/root/${NOTEBOOK_USER}
+      - /root/${NOTEBOOK_USER}:/root/${NOTEBOOK_USER}
     container_name: ${NOTEBOOK_USER}

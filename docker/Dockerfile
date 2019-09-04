@@ -172,7 +172,7 @@ RUN [[ ${ML} != gpu ]] || (conda install --quiet -y \
 
 # Mavis
 ARG MAVIS
-RUN test -z ${DEV} || (conda install --quiet -y \
+RUN test -z ${MAVIS} || (conda install --quiet -y \
       scikit-learn \
       boto3 \
       sphinx \

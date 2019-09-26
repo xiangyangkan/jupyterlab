@@ -4,7 +4,6 @@ jupyterhub
 jupyterlab
 ipywidgets
 ipympl
-conda-forge::blas=*=openblas
 numpy
 scipy
 pandas

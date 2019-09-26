@@ -5,6 +5,5 @@ build-essential
 dos2unix  
 procps  
 net-tools  
-htop  
-pigz  
+htop
 

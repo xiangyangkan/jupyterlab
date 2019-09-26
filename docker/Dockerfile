@@ -32,6 +32,7 @@ RUN mv /etc/apt/sources.list /etc/apt/sources.list.bak && \
 
 # extra dependencies
 # use pip instead of conda :  pip install --no-cache-dir -r /python_requirements.txt
+ARG BLAS
 COPY python_requirements.txt debian_requirements.txt /
 RUN apt-get update --fix-missing && \
     cat /debian_requirements.txt | xargs apt-get install -y --no-install-recommends --allow-unauthenticated && \
@@ -42,6 +43,7 @@ RUN apt-get update --fix-missing && \
     conda config --set show_channel_urls yes && \
     conda update -n base -c defaults conda && \
     conda update --all -y && \
+    conda install --quiet -y conda-forge::blas=*=${BLAS} && \
     conda install --quiet -y --file /python_requirements.txt && \
     conda install --quiet -y requests && \
     npm config set registry http://registry.npm.taobao.org/ && \
@@ -151,15 +153,18 @@ RUN test -z ${DB} || (apt-get update --fix-missing && \
 
 # Machine Learning
 ARG ML
-RUN [[ ${ML} != cpu ]] || (conda install --quiet -y \
+RUN [[ ${ML} != cpu ]] || ( \
+    conda install --quiet -y \
       scikit-learn \
       scikit-image \
       tensorflow \
       keras \
       && \
+    conda install --quiet -y pytorch torchvision cpuonly -c pytorch && \
     conda clean --all -f -y)
 
-RUN [[ ${ML} != gpu ]] || (conda install --quiet -y \
+RUN [[ ${ML} != gpu ]] || ( \
+    conda install --quiet -y \
       scikit-learn \
       scikit-image \
       cudatoolkit \
@@ -167,6 +172,7 @@ RUN [[ ${ML} != gpu ]] || (conda install --quiet -y \
       tensorflow-gpu \
       keras \
       && \
+    conda install --quiet -y pytorch torchvision -c pytorch && \
     conda clean --all -f -y)
 
 
@@ -174,12 +180,18 @@ RUN [[ ${ML} != gpu ]] || (conda install --quiet -y \
 ARG MAVIS
 RUN test -z ${MAVIS} || (conda install --quiet -y \
       scikit-learn \
+      scikit-image \
+      cudatoolkit \
+      cudnn \
+      tensorflow-gpu \
+      keras \
       boto3 \
       sphinx \
       twine \
       sphinx_rtd_theme \
       m2r \
       && \
+    conda install --quiet -y pytorch torchvision -c pytorch && \
     conda clean --all -f -y)
 
 ENTRYPOINT [ "/usr/bin/tini", "--" ]

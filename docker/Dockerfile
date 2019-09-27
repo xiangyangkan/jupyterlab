@@ -5,6 +5,7 @@ MAINTAINER Xiangyang Kan <xiangyangkan@outlook.com>
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 ENV PATH /opt/conda/bin:$PATH
 ENV PYTHON_VERSION 3.7
+ENV DEBIAN_VERSION=buster
 
 # Needed for string substitution
 SHELL ["/bin/bash", "-c"]
@@ -18,12 +19,12 @@ RUN ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime && \
 
 # change debian and pip source
 RUN mv /etc/apt/sources.list /etc/apt/sources.list.bak && \
-    echo "deb http://mirrors.aliyun.com/debian stretch main contrib non-free" >>/etc/apt/sources.list && \
-    echo "deb-src http://mirrors.aliyun.com/debian stretch main contrib non-free" >>/etc/apt/sources.list && \
-    echo "deb http://mirrors.aliyun.com/debian stretch-updates main contrib non-free" >>/etc/apt/sources.list && \
-    echo "deb-src http://mirrors.aliyun.com/debian stretch-updates main contrib non-free" >>/etc/apt/sources.list && \
-    echo "deb http://mirrors.aliyun.com/debian-security/ stretch/updates main non-free contrib" >>/etc/apt/sources.list && \
-    echo "deb-src http://mirrors.aliyun.com/debian-security/ stretch/updates main non-free contrib" >>/etc/apt/sources.list \
+    echo "deb http://mirrors.aliyun.com/debian ${DEBIAN_VERSION} main contrib non-free" >>/etc/apt/sources.list && \
+    echo "deb-src http://mirrors.aliyun.com/debian ${DEBIAN_VERSION} main contrib non-free" >>/etc/apt/sources.list && \
+    echo "deb http://mirrors.aliyun.com/debian ${DEBIAN_VERSION}-updates main contrib non-free" >>/etc/apt/sources.list && \
+    echo "deb-src http://mirrors.aliyun.com/debian ${DEBIAN_VERSION}-updates main contrib non-free" >>/etc/apt/sources.list && \
+    echo "deb http://mirrors.aliyun.com/debian-security/ ${DEBIAN_VERSION}/updates main non-free contrib" >>/etc/apt/sources.list && \
+    echo "deb-src http://mirrors.aliyun.com/debian-security/ ${DEBIAN_VERSION}/updates main non-free contrib" >>/etc/apt/sources.list \
     && \
     mkdir /root/.pip && \
     echo "[global] index-url=https://pypi.tuna.tsinghua.edu.cn/simple" >>/root/.pip/pip.conf && \
@@ -116,7 +117,6 @@ EXPOSE 8888
 
 # install mysql-server, redis-server and influxdb
 ARG DB
-ENV DEBIAN_VERSION=stretch
 RUN test -z ${DB} || (apt-get update --fix-missing && \
     apt-get install -y --no-install-recommends --allow-unauthenticated \
     gnupg2 apt-transport-https && \

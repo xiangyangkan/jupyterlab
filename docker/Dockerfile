@@ -4,8 +4,8 @@ MAINTAINER Xiangyang Kan <xiangyangkan@outlook.com>
 
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 ENV PATH /opt/conda/bin:$PATH
-ENV PYTHON_VERSION 3.7
 ENV DEBIAN_VERSION=buster
+ENV PYTHON_VERSION 3.7
 
 # Needed for string substitution
 SHELL ["/bin/bash", "-c"]

@@ -70,7 +70,7 @@ RUN apt-get update --fix-missing && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* \
     && \
-    conda config --add channels conda-forge && \
+    conda config --append channels conda-forge && \
     conda config --set show_channel_urls yes && \
     conda update -n base -c defaults conda && \
     conda update --all -y && \

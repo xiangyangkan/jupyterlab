@@ -44,7 +44,6 @@ RUN apt-get update --fix-missing && \
     conda update -n base -c defaults conda && \
     conda update --all -y && \
     conda install --quiet -y --file /python_requirements.txt && \
-    conda install --quiet -y requests && \
     npm config set registry http://registry.npm.taobao.org/ && \
     conda clean --all -f -y \
     && \

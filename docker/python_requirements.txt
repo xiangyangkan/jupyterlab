@@ -23,3 +23,4 @@ hdf5
 h5py
 protobuf
 xlrd
+requests

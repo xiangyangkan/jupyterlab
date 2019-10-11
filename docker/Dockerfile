@@ -18,7 +18,9 @@ RUN ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime && \
 
 
 # change debian and pip source
-RUN mv /etc/apt/sources.list /etc/apt/sources.list.bak && \
+# sometimes need chmod 777 /tmp to avoid gpg error
+RUN chmod 777 /tmp && \
+    mv /etc/apt/sources.list /etc/apt/sources.list.bak && \
     echo "deb http://mirrors.aliyun.com/debian ${DEBIAN_VERSION} main contrib non-free" >>/etc/apt/sources.list && \
     echo "deb-src http://mirrors.aliyun.com/debian ${DEBIAN_VERSION} main contrib non-free" >>/etc/apt/sources.list && \
     echo "deb http://mirrors.aliyun.com/debian ${DEBIAN_VERSION}-updates main contrib non-free" >>/etc/apt/sources.list && \
@@ -44,12 +46,10 @@ RUN apt-get update --fix-missing && \
     conda update -n base -c defaults conda && \
     conda update --all -y && \
     conda install --quiet -y --file /python_requirements.txt && \
-    conda install --quiet -y nodejs && \
     conda clean --all -f -y \
     && \
     jupyter labextension install \
         @jupyter-widgets/jupyterlab-manager \
-        @jupyterlab/hub-extension \
         jupyter-matplotlib \
         && \
     npm cache clean --force

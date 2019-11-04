@@ -120,7 +120,7 @@ RUN [[ ${TENSORFLOW} != cpu ]] || ( \
       && \
     conda clean --all -f -y)
 
-RUN [[ ${ML} != gpu ]] || ( \
+RUN [[ ${TENSORFLOW} != gpu ]] || ( \
     conda install --quiet -y \
       scikit-learn \
       tensorflow-gpu \

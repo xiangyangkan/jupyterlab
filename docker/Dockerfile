@@ -114,21 +114,30 @@ EXPOSE 8888
 ARG TENSORFLOW
 RUN [[ ${TENSORFLOW} != cpu ]] || ( \
     conda install --quiet -y \
+      scikit-learn \
       tensorflow \
       keras \
       && \
-    conda install --quiet -y pytorch torchvision cpuonly -c pytorch && \
     conda clean --all -f -y)
 
 RUN [[ ${ML} != gpu ]] || ( \
     conda install --quiet -y \
       scikit-learn \
-      scikit-image \
-      cudatoolkit \
-      cudnn \
       tensorflow-gpu \
       keras \
       && \
+    conda clean --all -f -y)
+
+
+# Pytorch
+ARG PYTORCH
+RUN [[ ${PYTORCH} != cpu ]] || ( \
+    conda install --quiet -y scikit-learn && \
+    conda install --quiet -y pytorch torchvision cpuonly -c pytorch && \
+    conda clean --all -f -y)
+
+RUN [[ ${PYTORCH} != gpu ]] || ( \
+    conda install --quiet -y scikit-learn && \
     conda install --quiet -y pytorch torchvision -c pytorch && \
     conda clean --all -f -y)
 

@@ -43,8 +43,6 @@ RUN apt-get update --fix-missing && \
     && \
     conda config --add channels conda-forge && \
     conda config --set show_channel_urls yes && \
-    conda update -n base -c defaults conda && \
-    conda update --all -y --no-channel-priority && \
     conda install --quiet -y --file /python_requirements.txt && \
     conda clean --all -f -y && \
     jupyter labextension install \
@@ -112,48 +110,10 @@ RUN chmod +x /run_jupyter.sh && \
 EXPOSE 8888
 
 
-# install mysql-server, redis-server and influxdb
-ARG DB
-RUN test -z ${DB} || (apt-get update --fix-missing && \
-    apt-get install -y --no-install-recommends --allow-unauthenticated \
-    gnupg2 apt-transport-https && \
-    curl -sL https://repos.influxdata.com/influxdb.key | sudo apt-key add - && \
-    echo "deb https://repos.influxdata.com/debian ${DEBIAN_VERSION} stable" >>/etc/apt/sources.list.d/influxdb.list && \
-    apt-get update --fix-missing && \
-    apt-get install -y --no-install-recommends --allow-unauthenticated \
-    mysql-server \
-    redis-server \
-    influxdb \
-    && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/* && \
-    rm -f /etc/apt/sources.list.d/influxdb.list \
-    && \
-    printf "\n\
-    [program:mysql-server] \n\
-    user=root \n\
-    command=mysql-server --character-set-server=utf8mb4 --max-allowed-packet=256M" \
-    >>/opt/conda/etc/supervisord.conf \
-    && \
-    printf "\n\
-    [program:redis-server] \n\
-    user=root \n\
-    command=redis-server" \
-    >>/opt/conda/etc/supervisord.conf \
-    && \
-    printf "\n\
-    [program:influxd] \n\
-    user=root \n\
-    command=influxd" \
-    >>/opt/conda/etc/supervisord.conf)
-
-
-# Machine Learning
-ARG ML
-RUN [[ ${ML} != cpu ]] || ( \
+# Tensorflow
+ARG TENSORFLOW
+RUN [[ ${TENSORFLOW} != cpu ]] || ( \
     conda install --quiet -y \
-      scikit-learn \
-      scikit-image \
       tensorflow \
       keras \
       && \
@@ -172,26 +132,5 @@ RUN [[ ${ML} != gpu ]] || ( \
     conda install --quiet -y pytorch torchvision -c pytorch && \
     conda clean --all -f -y)
 
-
-# Mavis
-ARG MAVIS
-RUN test -z ${MAVIS} || (conda install --quiet -y \
-      scikit-learn \
-      scikit-image \
-      cudatoolkit \
-      cudnn \
-      tensorflow-gpu \
-      keras \
-      boto3 \
-      sphinx \
-      twine \
-      sphinx_rtd_theme \
-      m2r \
-      && \
-    conda install --quiet -y pytorch torchvision -c pytorch && \
-    conda clean --all -f -y)
-
-
-ENTRYPOINT [ "/usr/bin/tini", "--" ]
 
 CMD ["/opt/conda/bin/supervisord", "-c", "/opt/conda/etc/supervisord.conf"]

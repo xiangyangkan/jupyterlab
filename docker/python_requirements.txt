@@ -24,3 +24,4 @@ h5py
 protobuf
 xlrd
 requests
+scikit-learn

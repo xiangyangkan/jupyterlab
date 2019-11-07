@@ -31,7 +31,7 @@ RUN chmod 777 /tmp && \
 
 
 # extra dependencies
-COPY python_requirements.txt /
+COPY debian_requirements.txt /
 RUN apt-get update --fix-missing && \
     cat /debian_requirements.txt | xargs apt-get install -y --no-install-recommends --allow-unauthenticated && \
     apt-get clean && \

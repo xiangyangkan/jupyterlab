@@ -6,7 +6,6 @@ ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 ENV PATH /opt/conda/bin:$PATH
 ENV DEBIAN_VERSION=buster
 ENV PYTHON_VERSION 3.7
-ENV CONDA_DIR=/opt/conda
 
 # Needed for string substitution
 SHELL ["/bin/bash", "-c"]
@@ -82,14 +81,12 @@ RUN chmod +x /run_jupyter.sh && \
 EXPOSE 8888
 
 
-# Julia dependencies
-# install Julia packages in /opt/julia instead of $HOME
-ENV JULIA_PKGDIR=/opt/julia
+# Julia
 ENV JULIA_VERSION=1.2.0
+ENV PATH /usr/local/bin/julia:$PATH
 RUN mkdir /opt/julia-${JULIA_VERSION} && \
     cd /tmp && \
     wget -q https://julialang-s3.julialang.org/bin/linux/x64/`echo ${JULIA_VERSION} | cut -d. -f 1,2`/julia-${JULIA_VERSION}-linux-x86_64.tar.gz && \
-    echo "926ced5dec5d726ed0d2919e849ff084a320882fb67ab048385849f9483afc47 *julia-${JULIA_VERSION}-linux-x86_64.tar.gz" | sha256sum -c - && \
     tar xzf julia-${JULIA_VERSION}-linux-x86_64.tar.gz -C /opt/julia-${JULIA_VERSION} --strip-components=1 && \
     rm /tmp/julia-${JULIA_VERSION}-linux-x86_64.tar.gz
 RUN ln -fs /opt/julia-*/bin/julia /usr/local/bin/julia

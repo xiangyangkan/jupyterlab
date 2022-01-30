@@ -44,7 +44,19 @@ RUN apt-get update --fix-missing && \
     conda config --add channels conda-forge && \
     conda config --set show_channel_urls yes && \
     conda install --quiet -y --file /python_requirements.txt && \
-    conda clean --all -f -y && \
+    conda clean --all -f -y
+
+# jupyter labextension
+ENV NODEJS_VERSION=17.4.0
+ENV NODEJS_DIR=/opt
+ARG NODEJS_MIRROR="https://nodejs.org/dist"
+RUN set -x && \
+    node_tar="node-v${NODEJS_VERSION}-linux-x64.tar.gz"&& \
+    wget --quiet "${NODEJS_MIRROR}/v${NODEJS_VERSION}/${node_tar}" && \
+    tar -zxvf "${NODEJS_DIR}" -C ${NODEJS_DIR} && \
+    rm "${NODEJS_DIR}" && \
+    ln -s "${NODEJS_DIR}/node-v${NODEJS_VERSION}-linux-x64/bin/node" /usr/bin/node && \
+    ln -s "${NODEJS_DIR}/node-v${NODEJS_VERSION}-linux-x64/bin/npm" /usr/bin/npm && \
     jupyter labextension install \
         @jupyter-widgets/jupyterlab-manager \
         @jupyterlab/hub-extension \

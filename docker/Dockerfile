@@ -53,7 +53,7 @@ ARG NODEJS_MIRROR="https://nodejs.org/dist"
 RUN set -x && \
     node_tar="node-v${NODEJS_VERSION}-linux-x64.tar.gz" && \
     wget --quiet "${NODEJS_MIRROR}/v${NODEJS_VERSION}/${node_tar}" && \
-    tar -zxvf "${NODEJS_DIR}" -C ${NODEJS_DIR} && \
+    tar -zxvf "${node_tar}" -C ${NODEJS_DIR} && \
     rm "${NODEJS_DIR}" && \
     ln -s "${NODEJS_DIR}/node-v${NODEJS_VERSION}-linux-x64/bin/node" /usr/bin/node && \
     ln -s "${NODEJS_DIR}/node-v${NODEJS_VERSION}-linux-x64/bin/npm" /usr/bin/npm && \

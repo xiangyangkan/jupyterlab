@@ -51,7 +51,7 @@ ENV NODEJS_VERSION=17.4.0
 ENV NODEJS_DIR=/opt
 ARG NODEJS_MIRROR="https://nodejs.org/dist"
 RUN set -x && \
-    node_tar="node-v${NODEJS_VERSION}-linux-x64.tar.gz"&& \
+    node_tar="node-v${NODEJS_VERSION}-linux-x64.tar.gz" && \
     wget --quiet "${NODEJS_MIRROR}/v${NODEJS_VERSION}/${node_tar}" && \
     tar -zxvf "${NODEJS_DIR}" -C ${NODEJS_DIR} && \
     rm "${NODEJS_DIR}" && \

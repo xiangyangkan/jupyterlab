@@ -32,6 +32,18 @@ RUN ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime && \
 #    echo "[global] index-url=https://pypi.tuna.tsinghua.edu.cn/simple" >>/root/.pip/pip.conf && \
 #    echo "[install] trusted-host=pypi.tuna.tsinghua.edu.cn" >>/root/.pip/pip.conf
 
+# nodejs install
+ENV NODEJS_VERSION=17.4.0
+ENV NODEJS_DIR=/opt
+ARG NODEJS_MIRROR="https://nodejs.org/dist"
+RUN set -x && \
+    node_tar="node-v${NODEJS_VERSION}-linux-x64.tar.gz" && \
+    wget --quiet "${NODEJS_MIRROR}/v${NODEJS_VERSION}/${node_tar}" && \
+    tar -zxvf "${node_tar}" -C ${NODEJS_DIR} && \
+    rm "${node_tar}" && \
+    ln -s "${NODEJS_DIR}/node-v${NODEJS_VERSION}-linux-x64/bin/node" /usr/bin/node && \
+    ln -s "${NODEJS_DIR}/node-v${NODEJS_VERSION}-linux-x64/bin/npm" /usr/bin/npm
+
 
 # extra dependencies
 # use pip instead of conda :  pip install --no-cache-dir -r /python_requirements.txt
@@ -44,19 +56,7 @@ RUN apt-get update --fix-missing && \
     conda config --add channels conda-forge && \
     conda config --set show_channel_urls yes && \
     conda install --quiet -y --file /python_requirements.txt && \
-    conda clean --all -f -y
-
-# jupyter labextension
-ENV NODEJS_VERSION=17.4.0
-ENV NODEJS_DIR=/opt
-ARG NODEJS_MIRROR="https://nodejs.org/dist"
-RUN set -x && \
-    node_tar="node-v${NODEJS_VERSION}-linux-x64.tar.gz" && \
-    wget --quiet "${NODEJS_MIRROR}/v${NODEJS_VERSION}/${node_tar}" && \
-    tar -zxvf "${node_tar}" -C ${NODEJS_DIR} && \
-    rm "${node_tar}" && \
-    ln -s "${NODEJS_DIR}/node-v${NODEJS_VERSION}-linux-x64/bin/node" /usr/bin/node && \
-    ln -s "${NODEJS_DIR}/node-v${NODEJS_VERSION}-linux-x64/bin/npm" /usr/bin/npm && \
+    conda clean --all -f -y && \
     jupyter labextension install \
         @jupyter-widgets/jupyterlab-manager \
         @jupyterlab/hub-extension \

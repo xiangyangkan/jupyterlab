@@ -62,15 +62,6 @@ ENV AUTHORIZED_KEYS **None**
 EXPOSE 22
 
 
-# proxy config
-# if you want to start proxy, run `service v2ray start`
-RUN curl -L -o /tmp/go.sh https://install.direct/go.sh && \
-    chmod +x /tmp/go.sh && \
-    /tmp/go.sh
-COPY v2ray_config.json /etc/v2ray/
-RUN mv /etc/v2ray/v2ray_config.json /etc/v2ray/config.json
-
-
 # jupyter lab config
 COPY jupyter_notebook_config.py /root/.jupyter/
 COPY run_jupyter.sh /

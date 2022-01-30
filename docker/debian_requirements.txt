@@ -7,4 +7,3 @@ dos2unix
 procps  
 net-tools  
 htop
-nodejs

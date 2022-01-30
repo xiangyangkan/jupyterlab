@@ -1,11 +1,11 @@
-FROM continuumio/miniconda3:latest
+FROM continuumio/miniconda3:4.10.3
 
 MAINTAINER Xiangyang Kan <xiangyangkan@outlook.com>
 
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 ENV PATH /opt/conda/bin:$PATH
 ENV DEBIAN_VERSION=buster
-ENV PYTHON_VERSION 3.7
+ENV PYTHON_VERSION 3.8
 
 # Needed for string substitution
 SHELL ["/bin/bash", "-c"]
@@ -19,14 +19,14 @@ RUN ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime && \
 
 # change debian source
 # sometimes need chmod 777 /tmp to avoid gpg error
-RUN chmod 777 /tmp && \
-    mv /etc/apt/sources.list /etc/apt/sources.list.bak && \
-    echo "deb http://mirrors.aliyun.com/debian ${DEBIAN_VERSION} main contrib non-free" >>/etc/apt/sources.list && \
-    echo "deb-src http://mirrors.aliyun.com/debian ${DEBIAN_VERSION} main contrib non-free" >>/etc/apt/sources.list && \
-    echo "deb http://mirrors.aliyun.com/debian ${DEBIAN_VERSION}-updates main contrib non-free" >>/etc/apt/sources.list && \
-    echo "deb-src http://mirrors.aliyun.com/debian ${DEBIAN_VERSION}-updates main contrib non-free" >>/etc/apt/sources.list && \
-    echo "deb http://mirrors.aliyun.com/debian-security/ ${DEBIAN_VERSION}/updates main non-free contrib" >>/etc/apt/sources.list && \
-    echo "deb-src http://mirrors.aliyun.com/debian-security/ ${DEBIAN_VERSION}/updates main non-free contrib" >>/etc/apt/sources.list
+#RUN chmod 777 /tmp && \
+#    mv /etc/apt/sources.list /etc/apt/sources.list.bak && \
+#    echo "deb http://mirrors.aliyun.com/debian ${DEBIAN_VERSION} main contrib non-free" >>/etc/apt/sources.list && \
+#    echo "deb-src http://mirrors.aliyun.com/debian ${DEBIAN_VERSION} main contrib non-free" >>/etc/apt/sources.list && \
+#    echo "deb http://mirrors.aliyun.com/debian ${DEBIAN_VERSION}-updates main contrib non-free" >>/etc/apt/sources.list && \
+#    echo "deb-src http://mirrors.aliyun.com/debian ${DEBIAN_VERSION}-updates main contrib non-free" >>/etc/apt/sources.list && \
+#    echo "deb http://mirrors.aliyun.com/debian-security/ ${DEBIAN_VERSION}/updates main non-free contrib" >>/etc/apt/sources.list && \
+#    echo "deb-src http://mirrors.aliyun.com/debian-security/ ${DEBIAN_VERSION}/updates main non-free contrib" >>/etc/apt/sources.list
 
 
 # extra dependencies
@@ -82,7 +82,7 @@ EXPOSE 8888
 
 
 # Julia Install
-ENV JULIA_VERSION=1.2.0
+ENV JULIA_VERSION=1.7.1
 ENV PATH /usr/local/bin/julia:$PATH
 RUN mkdir /opt/julia-${JULIA_VERSION} && \
     cd /tmp && \
@@ -100,4 +100,3 @@ RUN mkdir /etc/julia && \
 
 
 CMD ["/opt/conda/bin/supervisord", "-c", "/opt/conda/etc/supervisord.conf"]
-

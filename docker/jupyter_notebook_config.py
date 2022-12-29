@@ -1,5 +1,7 @@
 import os
-from IPython.lib import passwd
+import hashlib
+import random
+from IPython.utils.py3compat import encode
 
 c.NotebookApp.ip = '0.0.0.0'
 c.NotebookApp.port = int(os.getenv('PORT', 8888))
@@ -8,7 +10,12 @@ c.MultiKernelManager.default_kernel_name = 'python3'
 
 # sets a password if PASSWORD is set in the environment
 if 'NOTEBOOK_PASS' in os.environ:
-    c.NotebookApp.password = passwd(os.environ['NOTEBOOK_PASS'])
+    passphrase = os.environ['NOTEBOOK_PASS']
+    salt_len = 12
+    h = hashlib.new('sha1')
+    salt = ('%0' + str(salt_len) + 'x') % random.getrandbits(4 * salt_len)
+    h.update(encode(passphrase, 'utf-8') + encode(salt, 'ascii'))
+    c.NotebookApp.token = ':'.join(('sha1', salt, h.hexdigest()))
     del os.environ['NOTEBOOK_PASS']
 else:
     c.NotebookApp.token = ''

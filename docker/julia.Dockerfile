@@ -1,11 +1,11 @@
-FROM continuumio/miniconda3:4.10.3
+FROM continuumio/miniconda3:4.12.0
 
 MAINTAINER Xiangyang Kan <xiangyangkan@outlook.com>
 
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 ENV PATH /opt/conda/bin:$PATH
 ENV DEBIAN_VERSION=buster
-ENV PYTHON_VERSION 3.8
+ENV PYTHON_VERSION 3.9
 
 # Needed for string substitution
 SHELL ["/bin/bash", "-c"]
@@ -63,6 +63,7 @@ EXPOSE 22
 
 
 # jupyter lab config
+COPY jupyter_server_config.py /root/.jupyter/
 COPY jupyter_notebook_config.py /root/.jupyter/
 COPY run_jupyter.sh /
 RUN chmod +x /run_jupyter.sh && \
@@ -73,7 +74,7 @@ EXPOSE 8888
 
 
 # Julia Install
-ENV JULIA_VERSION=1.7.1
+ENV JULIA_VERSION=1.8.4
 ENV PATH /usr/local/bin/julia:$PATH
 RUN mkdir /opt/julia-${JULIA_VERSION} && \
     cd /tmp && \

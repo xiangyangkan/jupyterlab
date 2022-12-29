@@ -20,11 +20,14 @@ RUN ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime && \
 # install conda
 ENV CONDA_DIR=/opt/conda
 ENV PATH="${CONDA_DIR}/bin:${PATH}"
-ARG CONDA_MIRROR=https://github.com/conda-forge/miniforge/releases/latest/download
+ARG CONDA_MIRROR=https://repo.anaconda.com/miniconda
+# Specify Python 3.8 Version
+ARG CONDA_VERSION=22.11.1-1
 RUN set -x && \
     # Miniforge installer
     miniforge_arch=$(uname -m) && \
-    miniforge_installer="Mambaforge-Linux-${miniforge_arch}.sh" && \
+    # miniforge_installer="Mambaforge-Linux-${miniforge_arch}.sh" && \
+    miniforge_installer="Miniconda3-py38_${CONDA_VERSION}-Linux-${miniforge_arch}.sh" && \
     wget --quiet "${CONDA_MIRROR}/${miniforge_installer}" && \
     /bin/bash "${miniforge_installer}" -f -b -p "${CONDA_DIR}" && \
     rm "${miniforge_installer}" && \
@@ -54,7 +57,7 @@ RUN apt-get update --fix-missing && \
 
 # jupyter labextension
 # replace old version installed via conda
-ENV NODEJS_VERSION=17.4.0
+ENV NODEJS_VERSION=19.3.0
 ENV NODEJS_DIR=/opt
 ARG NODEJS_MIRROR="https://nodejs.org/dist"
 RUN set -x && \
@@ -121,6 +124,7 @@ ENV AUTHORIZED_KEYS **None**
 EXPOSE 22
 
 # jupyter lab config
+COPY jupyter_server_config.py /root/.jupyter/
 COPY jupyter_notebook_config.py /root/.jupyter/
 COPY run_jupyter.sh /
 RUN chmod +x /run_jupyter.sh && \

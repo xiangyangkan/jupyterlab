@@ -1,11 +1,11 @@
-FROM continuumio/miniconda3:4.10.3
+FROM continuumio/miniconda3:4.12.0
 
 MAINTAINER Xiangyang Kan <xiangyangkan@outlook.com>
 
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 ENV PATH /opt/conda/bin:$PATH
 ENV DEBIAN_VERSION=buster
-ENV PYTHON_VERSION 3.8
+ENV PYTHON_VERSION 3.9
 
 # Needed for string substitution
 SHELL ["/bin/bash", "-c"]
@@ -48,7 +48,7 @@ RUN apt-get update --fix-missing && \
 
 # jupyter labextension
 # replace old version installed via conda
-ENV NODEJS_VERSION=17.4.0
+ENV NODEJS_VERSION=19.3.0
 ENV NODEJS_DIR=/opt
 ARG NODEJS_MIRROR="https://nodejs.org/dist"
 RUN set -x && \
@@ -106,6 +106,7 @@ ENV AUTHORIZED_KEYS **None**
 EXPOSE 22
 
 # jupyter lab config
+COPY jupyter_server_config.py /root/.jupyter/
 COPY jupyter_notebook_config.py /root/.jupyter/
 COPY run_jupyter.sh /
 RUN chmod +x /run_jupyter.sh && \

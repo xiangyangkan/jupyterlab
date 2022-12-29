@@ -64,7 +64,7 @@ ENV NODEJS_DIR=/opt
 ARG NODEJS_MIRROR="https://nodejs.org/dist"
 RUN set -x && \
     node_tar="node-v${NODEJS_VERSION}-linux-x64.tar.gz" && \
-    wget --quiet "${NODEJS_MIRROR}/v${NODEJS_VERSION}/${node_tar}" && \
+    wget --quiet --no-check-certificate "${NODEJS_MIRROR}/v${NODEJS_VERSION}/${node_tar}" && \
     tar -zxvf "${node_tar}" -C ${NODEJS_DIR} && \
     rm "${node_tar}" && \
     rm "/opt/conda/bin/node" && \

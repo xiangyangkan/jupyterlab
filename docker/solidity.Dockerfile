@@ -81,7 +81,7 @@ RUN set -x && \
 
 # install solc
 RUN apt-get update --fix-missing && \
-    apt-get install --no-install-recommends --allow-unauthenticated -y software-properties-common && \
+    apt-get install --no-install-recommends --allow-unauthenticated -y software-properties-common gpg gpg-agent && \
     add-apt-repository ppa:ethereum/ethereum && \
     apt-get update --fix-missing && \
     apt-get install --no-install-recommends --allow-unauthenticated -y solc && \

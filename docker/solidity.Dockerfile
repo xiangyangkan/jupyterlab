@@ -22,12 +22,15 @@ ENV PATH="${CONDA_DIR}/bin:${PATH}"
 ARG CONDA_MIRROR=https://repo.anaconda.com/miniconda
 # Specify Python 3.8 Version
 ARG CONDA_VERSION=22.11.1-1
+RUN apt-get update --fix-missing && \
+    apt-get install -y --no-install-recommends --allow-unauthenticated wget && \
+    apt-get clean
 RUN set -x && \
     # Miniforge installer
     miniforge_arch=$(uname -m) && \
     # miniforge_installer="Mambaforge-Linux-${miniforge_arch}.sh" && \
     miniforge_installer="Miniconda3-py38_${CONDA_VERSION}-Linux-${miniforge_arch}.sh" && \
-    wget --quiet "${CONDA_MIRROR}/${miniforge_installer}" && \
+    wget --quiet --no-check-certificate "${CONDA_MIRROR}/${miniforge_installer}" && \
     /bin/bash "${miniforge_installer}" -f -b -p "${CONDA_DIR}" && \
     rm "${miniforge_installer}" && \
     # Conda configuration see https://conda.io/projects/conda/en/latest/configuration.html

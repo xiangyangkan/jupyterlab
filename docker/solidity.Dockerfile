@@ -136,5 +136,3 @@ RUN chmod +x /run_jupyter.sh && \
 EXPOSE 8888
 
 CMD ["/opt/conda/bin/supervisord", "-c", "/opt/conda/etc/supervisord.conf"]
-
-CMD ["/usr/bin/supervisord", "-c", "/supervisord.conf"]

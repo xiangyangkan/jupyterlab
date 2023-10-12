@@ -4,7 +4,7 @@ MAINTAINER Xiangyang Kan <xiangyangkan@outlook.com>
 
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 ENV PATH /opt/conda/bin:$PATH
-ENV PYTHON_VERSION 3.8
+ENV PYTHON_VERSION 3.10
 
 # Needed for string substitution
 SHELL ["/bin/bash", "-c"]
@@ -20,8 +20,8 @@ RUN ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime && \
 ENV CONDA_DIR=/opt/conda
 ENV PATH="${CONDA_DIR}/bin:${PATH}"
 ARG CONDA_MIRROR=https://repo.anaconda.com/miniconda
-# Specify Python 3.8 Version
-ARG CONDA_VERSION=22.11.1-1
+# Specify Python 3.10 Version
+ARG CONDA_VERSION=23.5.2-0
 RUN apt-get update --fix-missing && \
     apt-get install -y --no-install-recommends --allow-unauthenticated wget && \
     apt-get clean
@@ -29,7 +29,7 @@ RUN set -x && \
     # Miniforge installer
     miniforge_arch=$(uname -m) && \
     # miniforge_installer="Mambaforge-Linux-${miniforge_arch}.sh" && \
-    miniforge_installer="Miniconda3-py38_${CONDA_VERSION}-Linux-${miniforge_arch}.sh" && \
+    miniforge_installer="Miniconda3-py310_${CONDA_VERSION}-Linux-${miniforge_arch}.sh" && \
     wget --quiet --no-check-certificate "${CONDA_MIRROR}/${miniforge_installer}" && \
     /bin/bash "${miniforge_installer}" -f -b -p "${CONDA_DIR}" && \
     rm "${miniforge_installer}" && \
@@ -59,7 +59,7 @@ RUN apt-get update --fix-missing && \
 
 # jupyter labextension
 # replace old version installed via conda
-ENV NODEJS_VERSION=19.3.0
+ENV NODEJS_VERSION=20.5.1
 ENV NODEJS_DIR=/opt
 ARG NODEJS_MIRROR="https://nodejs.org/dist"
 RUN set -x && \
@@ -71,11 +71,6 @@ RUN set -x && \
     rm "/opt/conda/bin/npm" && \
     ln -s "${NODEJS_DIR}/node-v${NODEJS_VERSION}-linux-x64/bin/node" /opt/conda/bin/node && \
     ln -s "${NODEJS_DIR}/node-v${NODEJS_VERSION}-linux-x64/bin/npm" /opt/conda/bin/npm && \
-    jupyter labextension install \
-        @jupyter-widgets/jupyterlab-manager \
-        @jupyterlab/hub-extension \
-        jupyter-matplotlib \
-        && \
     npm cache clean --force
 
 
@@ -91,8 +86,7 @@ RUN apt-get update --fix-missing && \
 
 # jupyter code formatter
 RUN conda install --quiet -y black jupyterlab_code_formatter && \
-    jupyter labextension install @ryantam626/jupyterlab_code_formatter && \
-    jupyter serverextension enable --py jupyterlab_code_formatter && \
+    jupyter-server extension enable --py jupyterlab_code_formatter && \
     conda clean --all -f -y && \
     npm cache clean --force
 COPY shortcuts.jupyterlab-settings /root/.jupyter/lab/user-settings/@jupyterlab/shortcuts-extension/shortcuts.jupyterlab-settings
@@ -130,9 +124,23 @@ COPY jupyter_server_config.py /root/.jupyter/
 COPY jupyter_notebook_config.py /root/.jupyter/
 COPY run_jupyter.sh /
 RUN chmod +x /run_jupyter.sh && \
-    pip install --no-cache-dir jupyter_http_over_ws && \
-    jupyter serverextension enable --py jupyter_http_over_ws && \
+    pip install --upgrade requests && \
+    pip install --no-cache-dir jupyterlab jupyter_http_over_ws && \
+    jupyter-server extension enable --py jupyter_http_over_ws && \
     python -m ipykernel.kernelspec
 EXPOSE 8888
+
+# brownie installation
+RUN python3 -m pip install --user pipx && \
+    python3 -m pipx ensurepath
+RUN /root/.local/bin/pipx install eth-brownie
+
+# foundary installation
+RUN curl -L https://foundry.paradigm.xyz | bash
+
+# graph-node installation
+RUN npm install -g @graphprotocol/graph-cli && \
+    npm install -g @graphprotocol/graph-ts && \
+    npm cache clean --force
 
 CMD ["/opt/conda/bin/supervisord", "-c", "/opt/conda/etc/supervisord.conf"]

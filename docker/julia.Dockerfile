@@ -1,11 +1,10 @@
-FROM continuumio/miniconda3:4.12.0
+FROM continuumio/miniconda3:23.5.2-0
 
 MAINTAINER Xiangyang Kan <xiangyangkan@outlook.com>
 
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 ENV PATH /opt/conda/bin:$PATH
-ENV DEBIAN_VERSION=buster
-ENV PYTHON_VERSION 3.9
+ENV PYTHON_VERSION 3.11
 
 # Needed for string substitution
 SHELL ["/bin/bash", "-c"]
@@ -15,18 +14,6 @@ SHELL ["/bin/bash", "-c"]
 ARG TZ="Asia/Shanghai"
 RUN ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime && \
     echo ${TZ} > /etc/timezone
-
-
-# change debian source
-# sometimes need chmod 777 /tmp to avoid gpg error
-#RUN chmod 777 /tmp && \
-#    mv /etc/apt/sources.list /etc/apt/sources.list.bak && \
-#    echo "deb http://mirrors.aliyun.com/debian ${DEBIAN_VERSION} main contrib non-free" >>/etc/apt/sources.list && \
-#    echo "deb-src http://mirrors.aliyun.com/debian ${DEBIAN_VERSION} main contrib non-free" >>/etc/apt/sources.list && \
-#    echo "deb http://mirrors.aliyun.com/debian ${DEBIAN_VERSION}-updates main contrib non-free" >>/etc/apt/sources.list && \
-#    echo "deb-src http://mirrors.aliyun.com/debian ${DEBIAN_VERSION}-updates main contrib non-free" >>/etc/apt/sources.list && \
-#    echo "deb http://mirrors.aliyun.com/debian-security/ ${DEBIAN_VERSION}/updates main non-free contrib" >>/etc/apt/sources.list && \
-#    echo "deb-src http://mirrors.aliyun.com/debian-security/ ${DEBIAN_VERSION}/updates main non-free contrib" >>/etc/apt/sources.list
 
 
 # extra dependencies
@@ -67,14 +54,15 @@ COPY jupyter_server_config.py /root/.jupyter/
 COPY jupyter_notebook_config.py /root/.jupyter/
 COPY run_jupyter.sh /
 RUN chmod +x /run_jupyter.sh && \
-    pip install --no-cache-dir jupyter_http_over_ws && \
-    jupyter serverextension enable --py jupyter_http_over_ws && \
+    pip install --upgrade requests && \
+    pip install --no-cache-dir jupyterlab jupyter_http_over_ws && \
+    jupyter-server extension enable --py jupyter_http_over_ws && \
     python -m ipykernel.kernelspec
 EXPOSE 8888
 
 
 # Julia Install
-ENV JULIA_VERSION=1.8.4
+ENV JULIA_VERSION=1.9.3
 ENV PATH /usr/local/bin/julia:$PATH
 RUN mkdir /opt/julia-${JULIA_VERSION} && \
     cd /tmp && \

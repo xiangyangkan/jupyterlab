@@ -1,11 +1,10 @@
-FROM continuumio/miniconda3:4.12.0
+FROM continuumio/miniconda3:23.5.2-0
 
 MAINTAINER Xiangyang Kan <xiangyangkan@outlook.com>
 
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 ENV PATH /opt/conda/bin:$PATH
-ENV DEBIAN_VERSION=buster
-ENV PYTHON_VERSION 3.9
+ENV PYTHON_VERSION 3.11
 
 # Needed for string substitution
 SHELL ["/bin/bash", "-c"]
@@ -16,25 +15,9 @@ ARG TZ="Asia/Shanghai"
 RUN ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime && \
     echo ${TZ} > /etc/timezone
 
-
-# change debian and pip source
-# sometimes need chmod 777 /tmp to avoid gpg error
-#RUN chmod 777 /tmp && \
-#    mv /etc/apt/sources.list /etc/apt/sources.list.bak && \
-#    echo "deb http://mirrors.aliyun.com/debian ${DEBIAN_VERSION} main contrib non-free" >>/etc/apt/sources.list && \
-#    echo "deb-src http://mirrors.aliyun.com/debian ${DEBIAN_VERSION} main contrib non-free" >>/etc/apt/sources.list && \
-#    echo "deb http://mirrors.aliyun.com/debian ${DEBIAN_VERSION}-updates main contrib non-free" >>/etc/apt/sources.list && \
-#    echo "deb-src http://mirrors.aliyun.com/debian ${DEBIAN_VERSION}-updates main contrib non-free" >>/etc/apt/sources.list && \
-#    echo "deb http://mirrors.aliyun.com/debian-security/ ${DEBIAN_VERSION}/updates main non-free contrib" >>/etc/apt/sources.list && \
-#    echo "deb-src http://mirrors.aliyun.com/debian-security/ ${DEBIAN_VERSION}/updates main non-free contrib" >>/etc/apt/sources.list \
-#    && \
-#    mkdir /root/.pip && \
-#    echo "[global] index-url=https://pypi.tuna.tsinghua.edu.cn/simple" >>/root/.pip/pip.conf && \
-#    echo "[install] trusted-host=pypi.tuna.tsinghua.edu.cn" >>/root/.pip/pip.conf
-
-
 # extra dependencies
 # use pip instead of conda :  pip install --no-cache-dir -r /python_requirements.txt
+ENV PACKAGES supervisor jupyterlab numpy pandas requests
 COPY python_requirements.txt debian_requirements.txt /
 RUN apt-get update --fix-missing && \
     cat /debian_requirements.txt | xargs apt-get install -y --no-install-recommends --allow-unauthenticated && \
@@ -43,12 +26,12 @@ RUN apt-get update --fix-missing && \
     && \
     conda config --add channels conda-forge && \
     conda config --set show_channel_urls yes && \
-    conda install --quiet -y --file /python_requirements.txt && \
+    conda install --quiet -y $PACKAGES && \
     conda clean --all -f -y
 
 # jupyter labextension
 # replace old version installed via conda
-ENV NODEJS_VERSION=19.3.0
+ENV NODEJS_VERSION=20.5.1
 ENV NODEJS_DIR=/opt
 ARG NODEJS_MIRROR="https://nodejs.org/dist"
 RUN set -x && \
@@ -60,11 +43,6 @@ RUN set -x && \
     rm "/opt/conda/bin/npm" && \
     ln -s "${NODEJS_DIR}/node-v${NODEJS_VERSION}-linux-x64/bin/node" /opt/conda/bin/node && \
     ln -s "${NODEJS_DIR}/node-v${NODEJS_VERSION}-linux-x64/bin/npm" /opt/conda/bin/npm && \
-    jupyter labextension install \
-        @jupyter-widgets/jupyterlab-manager \
-        @jupyterlab/hub-extension \
-        jupyter-matplotlib \
-        && \
     npm cache clean --force
 
 
@@ -110,8 +88,9 @@ COPY jupyter_server_config.py /root/.jupyter/
 COPY jupyter_notebook_config.py /root/.jupyter/
 COPY run_jupyter.sh /
 RUN chmod +x /run_jupyter.sh && \
-    pip install --no-cache-dir jupyter_http_over_ws && \
-    jupyter serverextension enable --py jupyter_http_over_ws && \
+    pip install --upgrade requests && \
+    pip install --no-cache-dir jupyterlab jupyter_http_over_ws && \
+    jupyter-server extension enable --py jupyter_http_over_ws && \
     python -m ipykernel.kernelspec
 EXPOSE 8888
 

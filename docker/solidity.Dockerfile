@@ -59,7 +59,7 @@ RUN apt-get update --fix-missing && \
 
 # jupyter labextension
 # replace old version installed via conda
-ENV NODEJS_VERSION=20.5.1
+ENV NODEJS_VERSION=20.8.0
 ENV NODEJS_DIR=/opt
 ARG NODEJS_MIRROR="https://nodejs.org/dist"
 RUN set -x && \
@@ -139,8 +139,14 @@ RUN /root/.local/bin/pipx install eth-brownie
 RUN curl -L https://foundry.paradigm.xyz | bash
 
 # graph-node installation
-RUN npm install -g @graphprotocol/graph-cli && \
-    npm install -g @graphprotocol/graph-ts && \
-    npm cache clean --force
+#RUN npm install -g yarn @graphprotocol/graph-cli @graphprotocol/graph-ts && \
+#    npm cache clean --force
+RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg -o yarn.asc && \
+    mv yarn.asc /etc/apt/trusted.gpg.d/ && \
+    echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list && \
+    apt-get update --fix-missing && apt-get install --no-install-recommends --allow-unauthenticated -y libsecret-1-dev yarn && \
+    yarn global add @graphprotocol/graph-cli && \
+    yarn cache clean && \
+    apt-get clean
 
 CMD ["/opt/conda/bin/supervisord", "-c", "/opt/conda/etc/supervisord.conf"]

@@ -1,10 +1,10 @@
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 
 MAINTAINER Xiangyang Kan <xiangyangkan@outlook.com>
 
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 ENV PATH /opt/conda/bin:$PATH
-ENV PYTHON_VERSION 3.10
+ENV PYTHON_VERSION 3.11
 
 # Needed for string substitution
 SHELL ["/bin/bash", "-c"]
@@ -20,14 +20,14 @@ RUN ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime && \
 ENV CONDA_DIR=/opt/conda
 ENV PATH="${CONDA_DIR}/bin:${PATH}"
 ARG CONDA_MIRROR=https://repo.anaconda.com/miniconda
-# Specify Python 3.10 Version
-ARG CONDA_VERSION=23.5.2-0
+# Specify Python 3.11 Version
+ARG CONDA_VERSION=24.9.2-0
 RUN set -x && \
     apt-get update --fix-missing && \
     apt-get install -y --no-install-recommends --allow-unauthenticated wget && \
     apt-get clean && \
     miniforge_arch=$(uname -m) && \
-    miniforge_installer="Miniconda3-py310_${CONDA_VERSION}-Linux-${miniforge_arch}.sh" && \
+    miniforge_installer="Miniconda3-py311_${CONDA_VERSION}-Linux-${miniforge_arch}.sh" && \
     wget --quiet --no-check-certificate "${CONDA_MIRROR}/${miniforge_installer}" && \
     /bin/bash "${miniforge_installer}" -f -b -p "${CONDA_DIR}" && \
     rm "${miniforge_installer}" && \
@@ -56,7 +56,7 @@ RUN apt-get update --fix-missing && \
 
 # jupyter labextension
 # replace old version installed via conda
-ENV NODEJS_VERSION=20.8.0
+ENV NODEJS_VERSION=22.11.0
 ENV NODEJS_DIR=/opt
 ARG NODEJS_MIRROR="https://nodejs.org/dist"
 RUN set -x && \
@@ -79,14 +79,6 @@ RUN apt-get update --fix-missing && \
     apt-get install --no-install-recommends --allow-unauthenticated -y solc && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
-
-
-# jupyter code formatter
-RUN conda install --quiet -y black jupyterlab_code_formatter && \
-    jupyter-server extension enable --py jupyterlab_code_formatter && \
-    conda clean --all -f -y && \
-    npm cache clean --force
-COPY shortcuts.jupyterlab-settings /root/.jupyter/lab/user-settings/@jupyterlab/shortcuts-extension/shortcuts.jupyterlab-settings
 
 # deal with vim and matplotlib Mojibake
 COPY simhei.ttf /opt/conda/lib/python${PYTHON_VERSION}/site-packages/matplotlib/mpl-data/fonts/ttf

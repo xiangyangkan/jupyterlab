@@ -11,7 +11,7 @@ SHELL ["/bin/bash", "-c"]
 
 
 # change timezone
-ARG TZ="Asia/Shanghai"
+ARG TZ="UTC"
 RUN ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime && \
     echo ${TZ} > /etc/timezone
 

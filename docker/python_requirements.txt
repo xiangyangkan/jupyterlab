@@ -1,14 +1,14 @@
 supervisor
 notebook
+jupyterlab>=3.0.0
 jupyterhub
-jupyterlab
 ipywidgets
 ipympl
 numpy
 scipy
 pandas
 numexpr
-pytables
+tables
 matplotlib
 seaborn
 sympy
@@ -19,8 +19,7 @@ cloudpickle
 dill
 dask
 numba
-hdf5
-h5py
 protobuf
 xlrd
 requests
+poetry

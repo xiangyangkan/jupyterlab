@@ -70,6 +70,19 @@ RUN set -x && \
     ln -s "${NODEJS_DIR}/node-v${NODEJS_VERSION}-linux-x64/bin/npm" /opt/conda/bin/npm && \
     npm cache clean --force
 
+# install go
+
+ENV GOPATH=/usr/local/go
+ENV PATH=$PATH:$GOPATH/bin
+RUN apt-get update --fix-missing && \
+    apt-get install --no-install-recommends --allow-unauthenticated -y software-properties-common gnupg && \
+    add-apt-repository -y ppa:longsleep/golang-backports && \
+    apt-get update --fix-missing && \
+    apt-get install --no-install-recommends --allow-unauthenticated -y \
+      golang \
+      libssl-dev \
+      libmbedtls-dev \
+      autoconf
 
 # install solc
 RUN apt-get update --fix-missing && \

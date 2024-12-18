@@ -83,8 +83,23 @@ RUN set -x && \
     conda clean --all -f -y
 
 # add cmake and go-lang
-# key arguement for the build image: CMAKE_VERSION, BUF_VERSION
+# key arguement for the build image: NODEJS_VERSION, CMAKE_VERSION, BUF_VERSION
 FROM ${BASE_IMAGE} as build
+
+# install nodejs
+ARG NODEJS_VERSION=23.4.0
+ENV NODEJS_DIR=/opt
+ARG NODEJS_MIRROR="https://nodejs.org/dist"
+RUN set -x && \
+    node_tar="node-v${NODEJS_VERSION}-linux-x64.tar.gz" && \
+    wget --quiet --no-check-certificate "${NODEJS_MIRROR}/v${NODEJS_VERSION}/${node_tar}" && \
+    tar -zxvf "${node_tar}" -C ${NODEJS_DIR} && \
+    rm "${node_tar}" && \
+    rm -rf "/opt/conda/bin/node" && \
+    rm -rf "/opt/conda/bin/npm" && \
+    ln -s "${NODEJS_DIR}/node-v${NODEJS_VERSION}-linux-x64/bin/node" /opt/conda/bin/node && \
+    ln -s "${NODEJS_DIR}/node-v${NODEJS_VERSION}-linux-x64/bin/npm" /opt/conda/bin/npm && \
+    npm cache clean --force
 
 # install cmake
 ARG CMAKE_VERSION=3.30.6
@@ -97,7 +112,7 @@ RUN set -x && \
     ./${cmake_sh} --prefix=${CMAKE_DIR} --exclude-subdir --skip-license && \
     rm ${cmake_sh}
 
-# install go-lang, buf
+# install go-lang, cargo and buf
 ARG BUF_VERSION=1.47.2
 ENV GOPATH=/usr/local/go
 ENV PATH=$PATH:$GOPATH/bin
@@ -111,6 +126,7 @@ RUN apt-get update --fix-missing && \
       libmbedtls-dev \
       autoconf \
       && \
+    curl https://sh.rustup.rs -sSf | sh -s -- -y && source "$HOME/.cargo/env" && \
     go install github.com/bufbuild/buf/cmd/buf@v$BUF_VERSION && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
@@ -122,6 +138,38 @@ RUN substreams_file="substreams_linux_x86_64.tar.gz" && \
     wget --quiet "${SUBSTREAMS_REPO}/${substreams_file}" && \
     tar -xzf "${substreams_file}" -C /usr/local/bin && \
     rm "${substreams_file}"
+
+# add evm, brownie, foundary, graph-node
+FROM ${BASE_IMAGE} as evm
+# install solc
+RUN apt-get update --fix-missing && \
+    apt-get install --no-install-recommends --allow-unauthenticated -y software-properties-common gpg gpg-agent && \
+    add-apt-repository ppa:ethereum/ethereum && \
+    apt-get update --fix-missing && \
+    apt-get install --no-install-recommends --allow-unauthenticated -y solc && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# brownie installation
+RUN python3 -m pip install --user pipx && \
+    pip install Cython~=0.29 blosc2~=2.0.0 && \
+    pip install --no-build-isolation pyyaml==5.4.1 && \
+    python3 -m pipx ensurepath
+RUN /root/.local/bin/pipx install eth-brownie
+
+# foundary installation
+RUN curl -L https://foundry.paradigm.xyz | bash
+
+# graph-node installation
+RUN npm install -g yarn @graphprotocol/graph-cli @graphprotocol/graph-ts && \
+    npm cache clean --force
+RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg -o yarn.asc && \
+    mv yarn.asc /etc/apt/trusted.gpg.d/ && \
+    echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list && \
+    apt-get update --fix-missing && apt-get install --no-install-recommends --allow-unauthenticated -y libsecret-1-dev yarn && \
+    yarn global add @graphprotocol/graph-cli && \
+    yarn cache clean && \
+    apt-get clean
 
 # add extra dependencies and jupyter lab
 # key arguement for the devel image: PYTHON_VERSION

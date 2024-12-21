@@ -63,7 +63,7 @@ CMD ["/usr/bin/supervisord", "-c", "/supervisord.conf"]
 FROM ${BASE_IMAGE} as conda
 
 # install conda
-ENV PYTHON_VERSION=${PYTHON_VERSION:-3.11}
+ARG PYTHON_VERSION=3.11
 ENV CONDA_DIR=/opt/conda
 ENV PATH="${CONDA_DIR}/bin:${PATH}"
 ARG CONDA_MIRROR=https://repo.anaconda.com/miniconda
@@ -176,7 +176,7 @@ RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg -o yarn.asc && \
 FROM ${BASE_IMAGE} as devel
 
 # extra dependencies
-ENV PYTHON_VERSION=${PYTHON_VERSION:-3.11}
+ARG PYTHON_VERSION=3.11
 COPY python_requirements.txt debian_requirements.txt /
 RUN apt-get update --fix-missing && \
     cat /debian_requirements.txt | xargs apt-get install -y --no-install-recommends --allow-unauthenticated && \

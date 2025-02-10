@@ -63,11 +63,11 @@ CMD ["/usr/bin/supervisord", "-c", "/supervisord.conf"]
 FROM ${BASE_IMAGE} as conda
 
 # install conda
-ARG PYTHON_VERSION=3.11
+ARG PYTHON_VERSION=3.12
 ENV CONDA_DIR=/opt/conda
 ENV PATH="${CONDA_DIR}/bin:${PATH}"
 ARG CONDA_MIRROR=https://repo.anaconda.com/miniconda
-ARG CONDA_VERSION=24.11.1-0
+ARG CONDA_VERSION=25.1.1-0
 RUN set -x && \
     # Miniforge installer
     miniforge_arch=$(uname -m) && \
@@ -87,7 +87,7 @@ RUN set -x && \
 FROM ${BASE_IMAGE} as build
 
 # install nodejs
-ARG NODEJS_VERSION=23.4.0
+ARG NODEJS_VERSION=23.7.0
 ENV NODEJS_DIR=/opt
 ARG NODEJS_MIRROR="https://nodejs.org/dist"
 RUN set -x && \
@@ -102,7 +102,7 @@ RUN set -x && \
     npm cache clean --force
 
 # install cmake
-ARG CMAKE_VERSION=3.30.6
+ARG CMAKE_VERSION=3.31.5
 ARG CMAKE_MIRROR=https://github.com/Kitware/CMake/releases/download
 ENV CMAKE_DIR=/usr/local
 RUN set -x && \
@@ -113,7 +113,7 @@ RUN set -x && \
     rm ${cmake_sh}
 
 # install go-lang, cargo and buf
-ARG BUF_VERSION=1.47.2
+ARG BUF_VERSION=1.50.0
 ENV GOPATH=/usr/local/go
 ENV PATH=$PATH:$GOPATH/bin
 RUN apt-get update --fix-missing && \
@@ -132,7 +132,7 @@ RUN apt-get update --fix-missing && \
     rm -rf /var/lib/apt/lists/*
 
 # install substreams
-ARG SUBSTREAMS_VERSION=1.11.3
+ARG SUBSTREAMS_VERSION=1.12.4
 ENV SUBSTREAMS_REPO="https://github.com/streamingfast/substreams/releases/download/v${SUBSTREAMS_VERSION}"
 RUN substreams_file="substreams_linux_x86_64.tar.gz" && \
     wget --quiet "${SUBSTREAMS_REPO}/${substreams_file}" && \
@@ -176,7 +176,7 @@ RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg -o yarn.asc && \
 FROM ${BASE_IMAGE} as devel
 
 # extra dependencies
-ARG PYTHON_VERSION=3.11
+ARG PYTHON_VERSION=3.12
 COPY python_requirements.txt debian_requirements.txt /
 RUN apt-get update --fix-missing && \
     cat /debian_requirements.txt | xargs apt-get install -y --no-install-recommends --allow-unauthenticated && \

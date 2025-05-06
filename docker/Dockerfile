@@ -67,7 +67,7 @@ ARG PYTHON_VERSION=3.12
 ENV CONDA_DIR=/opt/conda
 ENV PATH="${CONDA_DIR}/bin:${PATH}"
 ARG CONDA_MIRROR=https://repo.anaconda.com/miniconda
-ARG CONDA_VERSION=25.1.1-2
+ARG CONDA_VERSION=25.3.1-1
 RUN set -x && \
     # Miniforge installer
     miniforge_arch=$(uname -m) && \
@@ -87,7 +87,7 @@ RUN set -x && \
 FROM ${BASE_IMAGE} as build
 
 # install nodejs
-ARG NODEJS_VERSION=23.9.0
+ARG NODEJS_VERSION=23.11.0
 ENV NODEJS_DIR=/opt
 ARG NODEJS_MIRROR="https://nodejs.org/dist"
 RUN set -x && \
@@ -102,7 +102,7 @@ RUN set -x && \
     npm cache clean --force
 
 # install cmake
-ARG CMAKE_VERSION=4.0.0
+ARG CMAKE_VERSION=4.0.2
 ARG CMAKE_MIRROR=https://github.com/Kitware/CMake/releases/download
 ENV CMAKE_DIR=/usr/local
 RUN set -x && \
@@ -113,7 +113,8 @@ RUN set -x && \
     rm ${cmake_sh}
 
 # install go-lang, cargo and buf
-ARG BUF_VERSION=1.51.0
+ARG BUF_VERSION=1.53.0
+ARG RUST_VERSION=1.86.0
 ENV GOPATH=/usr/local/go
 ENV PATH=$PATH:$GOPATH/bin
 RUN apt-get update --fix-missing && \
@@ -126,7 +127,7 @@ RUN apt-get update --fix-missing && \
       libmbedtls-dev \
       autoconf \
       && \
-    curl https://sh.rustup.rs -sSf | sh -s -- -y && source "$HOME/.cargo/env" && \
+    curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain ${RUST_VERSION} && source "$HOME/.cargo/env" && \
     go install github.com/bufbuild/buf/cmd/buf@v$BUF_VERSION && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*

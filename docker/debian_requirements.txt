@@ -11,5 +11,6 @@ iproute2
 htop   
 proxychains   
 lrzsz  
-tree  
-
+tree
+rsync
+sshpass

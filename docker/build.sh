@@ -33,7 +33,7 @@ function build_substreams_image() {
 PYTHON_VERSION="3.12"
 NODEJS_VERSION="23.11.0"
 CMAKE_VERSION="4.0.2"
-RUST_VERSION="1.87.0"
+RUST_VERSION="1.86.0"
 SUBSTREAMS_VERSION="1.15.5"
 
 dos2unix ./*

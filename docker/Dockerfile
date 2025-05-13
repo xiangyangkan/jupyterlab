@@ -83,11 +83,11 @@ RUN set -x && \
     conda clean --all -f -y
 
 # add cmake and go-lang
-# key arguement for the build image: NODEJS_VERSION, CMAKE_VERSION, BUF_VERSION
+# key arguement for the build image: NODEJS_VERSION, CMAKE_VERSION, BUF_VERSION, RUST_VERSION, SUBSTREAMS_VERSION, ANCHOR_VERSION
 FROM ${BASE_IMAGE} as build
 
 # install nodejs
-ARG NODEJS_VERSION=23.11.0
+ARG NODEJS_VERSION
 ENV NODEJS_DIR=/opt
 ARG NODEJS_MIRROR="https://nodejs.org/dist"
 RUN set -x && \
@@ -102,7 +102,7 @@ RUN set -x && \
     npm cache clean --force
 
 # install cmake
-ARG CMAKE_VERSION=4.0.2
+ARG CMAKE_VERSION
 ARG CMAKE_MIRROR=https://github.com/Kitware/CMake/releases/download
 ENV CMAKE_DIR=/usr/local
 RUN set -x && \
@@ -113,8 +113,8 @@ RUN set -x && \
     rm ${cmake_sh}
 
 # install go-lang, cargo and buf
-ARG BUF_VERSION=1.53.0
-ARG RUST_VERSION=1.86.0
+ARG BUF_VERSION=1.54.0
+ARG RUST_VERSION
 ENV GOPATH=/usr/local/go
 ENV PATH=$PATH:$GOPATH/bin
 RUN apt-get update --fix-missing && \
@@ -133,12 +133,17 @@ RUN apt-get update --fix-missing && \
     rm -rf /var/lib/apt/lists/*
 
 # install substreams
-ARG SUBSTREAMS_VERSION=1.15.0
+ARG SUBSTREAMS_VERSION
+ARG ANCHOR_VERSION=0.31.1
 ENV SUBSTREAMS_REPO="https://github.com/streamingfast/substreams/releases/download/v${SUBSTREAMS_VERSION}"
+ENV ANCHOR_REPO="https://github.com/solana-foundation/anchor/releases/download/v${ANCHOR_VERSION}"
 RUN substreams_file="substreams_linux_x86_64.tar.gz" && \
     wget --quiet "${SUBSTREAMS_REPO}/${substreams_file}" && \
     tar -xzf "${substreams_file}" -C /usr/local/bin && \
-    rm "${substreams_file}"
+    rm "${substreams_file}" && \
+    anchor_file="anchor-${ANCHOR_VERSION}-x86_64-unknown-linux-gnu" && \
+    wget --quiet -O /usr/local/bin/anchor "${ANCHOR_REPO}/${anchor_file}" && \
+    chmod +x /usr/local/bin/anchor
 
 # add evm, brownie, foundary, graph-node
 FROM ${BASE_IMAGE} as evm

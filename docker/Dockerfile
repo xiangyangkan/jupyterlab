@@ -130,6 +130,7 @@ RUN apt-get update --fix-missing && \
       autoconf \
       && \
     curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain ${RUST_VERSION} && source "$HOME/.cargo/env" && \
+    rustup target add wasm32-unknown-unknown && \
     go install github.com/bufbuild/buf/cmd/buf@v$BUF_VERSION && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*

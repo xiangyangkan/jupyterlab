@@ -67,7 +67,7 @@ ARG PYTHON_VERSION=3.12
 ENV CONDA_DIR=/opt/conda
 ENV PATH="${CONDA_DIR}/bin:${PATH}"
 ARG CONDA_MIRROR=https://repo.anaconda.com/miniconda
-ARG CONDA_VERSION=25.3.1-1
+ARG CONDA_VERSION=25.7.0-2
 RUN set -x && \
     # Miniforge installer
     miniforge_arch=$(uname -m) && \
@@ -115,7 +115,7 @@ RUN set -x && \
     rm ${cmake_sh}
 
 # install go-lang, cargo and buf
-ARG BUF_VERSION=1.54.0
+ARG BUF_VERSION=1.56.0
 ARG RUST_VERSION
 ENV GOPATH=/usr/local/go
 ENV PATH=$PATH:$GOPATH/bin

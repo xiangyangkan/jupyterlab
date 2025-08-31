@@ -101,7 +101,8 @@ RUN set -x && \
     ln -s "${NODEJS_DIR}/node-v${NODEJS_VERSION}-linux-x64/bin/npm" /opt/conda/bin/npm && \
     npm install -g @anthropic-ai/claude-code && \
     npm cache clean --force && \
-    ln -s "${NODEJS_DIR}/node-v${NODEJS_VERSION}-linux-x64/bin/claude" /usr/local/bin/claude
+    ln -s "${NODEJS_DIR}/node-v${NODEJS_VERSION}-linux-x64/bin/claude" /usr/local/bin/claude \
+    ln -s "${NODEJS_DIR}/node-v${NODEJS_VERSION}-linux-x64/bin/npx" /usr/local/bin/npx
 
 # install cmake
 ARG CMAKE_VERSION
